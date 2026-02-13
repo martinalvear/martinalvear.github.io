@@ -1,79 +1,399 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="es">
 <head>
-<title>¿Me perdonas?</title>
-<style>
-    body {
-        text-align: center;
-        margin-top: 20%;
-        font-family: Arial, sans-serif;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>¿Quieres ser mi San Valentín? 💘</title>
+  <style>
+    :root{
+      --bg1:#ffecf3;
+      --bg2:#ffe0ee;
+      --card:#ffffffcc;
+      --ink:#2b1b26;
+      --muted:#6b4b5c;
+      --yes:#ff4d88;
+      --no:#b9b9c3;
+      --shadow: 0 18px 50px rgba(0,0,0,.12);
+      --radius: 22px;
     }
-    .button {
-        cursor: pointer;
-        padding: 10px 20px;
-        font-size: 16px;
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100svh;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(1200px 800px at 20% 10%, #fff 0%, transparent 60%),
+        radial-gradient(900px 700px at 80% 20%, #fff 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      color:var(--ink);
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      overflow:hidden;
     }
-    #noButton {
-        transition: 0.3s all;
+
+    .hearts{
+      position:fixed; inset:0; pointer-events:none; overflow:hidden;
     }
-    #popup {
-        display: none;
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 20px;
-        border: 2px solid black;
-        z-index: 1000;
+    .heart{
+      position:absolute;
+      width:18px; height:18px;
+      transform: rotate(45deg);
+      opacity:.8;
+      animation: floatUp linear infinite;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.08));
     }
-    #overlay {
-        display: none;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 999;
+    .heart::before, .heart::after{
+      content:"";
+      position:absolute; width:18px; height:18px;
+      background: currentColor;
+      border-radius: 50%;
     }
-</style>
+    .heart{ background: currentColor; }
+    .heart::before{ left:-9px; top:0; }
+    .heart::after{ left:0; top:-9px; }
+
+    @keyframes floatUp{
+      from{ transform: translateY(20svh) rotate(45deg); }
+      to{ transform: translateY(-120svh) rotate(45deg); }
+    }
+
+    .wrap{
+      width:min(680px, 92vw);
+      padding: 18px;
+    }
+    .card{
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.6);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: clamp(18px, 3.5vw, 30px);
+      position:relative;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius: 999px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.06);
+      box-shadow: 0 10px 25px rgba(0,0,0,.08);
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .badge .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--yes);
+      box-shadow: 0 0 0 6px rgba(255,77,136,.18);
+    }
+
+    h1{
+      margin: 14px 0 8px;
+      font-size: clamp(22px, 4.3vw, 34px);
+      line-height: 1.15;
+    }
+    p{
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: clamp(14px, 2.8vw, 16px);
+      line-height: 1.55;
+    }
+
+    .buttons{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-start;
+      margin-top: 10px;
+      position:relative;
+    }
+    button{
+      border:0;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-weight: 800;
+      font-size: 16px;
+      cursor:pointer;
+      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #yesBtn{
+      background: linear-gradient(180deg, #ff5b95, var(--yes));
+      color:white;
+      box-shadow: 0 14px 30px rgba(255,77,136,.28);
+      min-width: 180px;
+    }
+    #yesBtn:hover{ filter: brightness(1.02); transform: translateY(-1px); }
+    #yesBtn:active{ transform: translateY(1px) scale(.99); }
+
+    #noBtn{
+      background: #f2f2f6;
+      color: #6d6d78;
+      border: 1px dashed rgba(120,120,140,.45);
+      min-width: 150px;
+      position: relative;
+    }
+
+    .hint{
+      margin-top: 14px;
+      font-size: 13px;
+      color: #7a5063;
+      opacity:.9;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.18);
+      padding: 18px;
+    }
+    .modal.show{ display:grid; }
+    .modal-card{
+      width:min(560px, 94vw);
+      background:#fff;
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.25);
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    .modal-card h2{
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height:1.2;
+    }
+    .modal-card p{ margin:0 0 14px; }
+    .row{
+      display:flex; gap:10px; flex-wrap:wrap;
+      justify-content:flex-end;
+      margin-top: 14px;
+    }
+    .ghost{
+      background:#f6f6f9;
+      color:#444;
+      border:1px solid rgba(0,0,0,.08);
+    }
+
+    .confetti{
+      position:fixed; inset:0; pointer-events:none;
+      overflow:hidden;
+    }
+    .piece{
+      position:absolute;
+      width:10px; height:16px;
+      border-radius: 4px;
+      opacity:.95;
+      transform: translateY(-10vh) rotate(0deg);
+      animation: fall linear forwards;
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,.08));
+    }
+    @keyframes fall{
+      to{
+        transform: translateY(120vh) rotate(720deg);
+      }
+    }
+
+    .footer{
+      margin-top: 14px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      font-size: 12px;
+      color: rgba(0,0,0,.45);
+    }
+    .footer code{
+      background: rgba(255,77,136,.10);
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: rgba(0,0,0,.55);
+    }
+  </style>
 </head>
 <body>
-    <h1>¿Me perdonas?</h1>
-    <button class="button" id="yesButton" onclick="showPopup()">SÍ</button>
-    <button class="button" id="noButton" onmouseover="moveButton()">NO</button>
+  <div class="hearts" aria-hidden="true" id="hearts"></div>
+  <div class="confetti" aria-hidden="true" id="confetti"></div>
 
-    <div id="overlay" onclick="hidePopup()"></div>
-    <div id="popup">
-        <p>TE AMO</p>
-        <button class="button" onclick="hidePopup()">Cerrar</button>
+  <main class="wrap">
+    <section class="card" role="group" aria-label="Pregunta San Valentín">
+      <div class="badge"><span class="dot"></span> Mensaje importante</div>
+
+      <h1 id="title">Oye, mi noia… 💗</h1>
+      <p id="subtitle">
+        Te tengo una pregunta pequeñita pero con sentimientos gigantes:
+        <strong>¿quieres ser mi San Valentín?</strong>
+      </p>
+
+      <div class="buttons">
+        <button id="yesBtn" type="button">Sí, obvio 💘</button>
+        <button id="noBtn" type="button" aria-label="No (no disponible)">No 🙃</button>
+      </div>
+
+      <div class="hint" id="hint">Pista: el “No” está en modo tímido hoy.</div>
+
+      <div class="footer">
+        <div>Hecho con amor y cero posibilidades de rechazo.</div>
+        <div><code>Tip:</code> Ábrelo en el cel y toca el “No”.</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <h2 id="modalTitle">¡Siiiii! 💞</h2>
+      <p id="modalText">
+        Sabía que mi noia diría que sí. Prometo darte muchos abracitos, besitos y un día hermoso contigo.
+      </p>
+      <div class="row">
+        <button class="ghost" id="copyBtn" type="button">Copiar mensaje</button>
+        <button id="closeBtn" type="button">Cerrar 💗</button>
+      </div>
     </div>
+  </div>
 
-    <script>
-        function moveButton() {
-            var noButton = document.getElementById('noButton');
-            var newX = Math.random() * window.innerWidth - 100;
-            var newY = Math.random() * window.innerHeight - 50;
-            newX = newX < 0 ? 0 : newX;
-            newY = newY < 0 ? 0 : newY;
+  <script>
+    // ---------- Mini generador de corazones flotando ----------
+    const hearts = document.getElementById("hearts");
+    const colors = ["#ff4d88", "#ff6ad5", "#a55cff", "#ff3b6c", "#ff88b3"];
 
-            noButton.style.position = 'absolute';
-            noButton.style.left = newX + 'px';
-            noButton.style.top = newY + 'px';
-        }
+    function spawnHeart() {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.bottom = (-10 - Math.random() * 20) + "vh";
+      h.style.color = colors[Math.floor(Math.random() * colors.length)];
+      const dur = 6 + Math.random() * 8;
+      h.style.animationDuration = dur + "s";
+      h.style.opacity = (0.45 + Math.random() * 0.45).toFixed(2);
+      h.style.transform = `rotate(45deg) scale(${(0.7 + Math.random() * 1.2).toFixed(2)})`;
+      hearts.appendChild(h);
+      setTimeout(() => h.remove(), dur * 1000);
+    }
+    setInterval(spawnHeart, 380);
+    for (let i = 0; i < 10; i++) setTimeout(spawnHeart, i * 120);
 
-        function showPopup() {
-            document.getElementById('popup').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
+    // ---------- Botones ----------
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn  = document.getElementById("noBtn");
+    const hint   = document.getElementById("hint");
+    const modal  = document.getElementById("modal");
+    const closeBtn = document.getElementById("closeBtn");
+    const copyBtn  = document.getElementById("copyBtn");
+    const confetti = document.getElementById("confetti");
 
-        function hidePopup() {
-            document.getElementById('popup').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
-    </script>
+    // Truco TikTok: el NO se escapa siempre (no se deja presionar)
+    const phrases = [
+      "Esa opción no está disponible 😌",
+      "Nop, hoy no existe el ‘No’ 😅",
+      "Intenta de nuevo… con el ‘Sí’ 😘",
+      "El ‘No’ se fue a dormir 💤",
+      "Solo se aceptan ‘Sí’ 💗"
+    ];
+    let tries = 0;
+
+    function moveNoButton() {
+      tries++;
+      const rect = noBtn.getBoundingClientRect();
+      const pad = 10;
+
+      // límites dentro del viewport
+      const maxX = window.innerWidth - rect.width - pad;
+      const maxY = window.innerHeight - rect.height - pad;
+
+      const x = Math.max(pad, Math.random() * maxX);
+      const y = Math.max(pad, Math.random() * maxY);
+
+      noBtn.style.position = "fixed";
+      noBtn.style.left = x + "px";
+      noBtn.style.top  = y + "px";
+
+      hint.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+      noBtn.style.transform = `rotate(${(-6 + Math.random() * 12).toFixed(1)}deg)`;
+    }
+
+    // Bloqueo real: aunque lo “toquen”, no hará “No”.
+    // En desktop: al pasar el mouse se mueve.
+    noBtn.addEventListener("mouseenter", moveNoButton);
+
+    // En móvil: al intentar tocarlo, se mueve antes del click.
+    noBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      moveNoButton();
+    }, { passive: false });
+
+    // Si por alguna razón llega un click, lo anulamos igual.
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      moveNoButton();
+    });
+
+    // ---------- Modal + confetti ----------
+    function launchConfetti() {
+      const pieces = 90;
+      for (let i = 0; i < pieces; i++) {
+        const p = document.createElement("div");
+        p.className = "piece";
+        p.style.left = (Math.random() * 100) + "vw";
+        p.style.top = (-10 - Math.random() * 30) + "vh";
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.animationDuration = (2.8 + Math.random() * 1.8) + "s";
+        p.style.width = (8 + Math.random() * 8) + "px";
+        p.style.height = (10 + Math.random() * 16) + "px";
+        confetti.appendChild(p);
+        setTimeout(() => p.remove(), 5000);
+      }
+    }
+
+    yesBtn.addEventListener("click", () => {
+      modal.classList.add("show");
+      launchConfetti();
+
+      // Si el NO ya se movió, lo devolvemos para que no quede perdido.
+      noBtn.style.position = "relative";
+      noBtn.style.left = "";
+      noBtn.style.top = "";
+      noBtn.style.transform = "";
+    });
+
+    closeBtn.addEventListener("click", () => modal.classList.remove("show"));
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("show");
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      const msg = "Mi noia 💗 ¿quieres ser mi San Valentín? Te prometo un día hermoso contigo 😘";
+      try {
+        await navigator.clipboard.writeText(msg);
+        copyBtn.textContent = "¡Copiado! ✅";
+        setTimeout(() => (copyBtn.textContent = "Copiar mensaje"), 1200);
+      } catch {
+        // fallback básico
+        const ta = document.createElement("textarea");
+        ta.value = msg;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        copyBtn.textContent = "¡Copiado! ✅";
+        setTimeout(() => (copyBtn.textContent = "Copiar mensaje"), 1200);
+      }
+    });
+
+    // Bonus: si intenta muchas veces el NO, lo hacemos mini
+    setInterval(() => {
+      if (tries >= 6) {
+        noBtn.style.opacity = "0.7";
+        noBtn.style.filter = "grayscale(1)";
+      }
+      if (tries >= 10) {
+        noBtn.style.opacity = "0.35";
+        noBtn.textContent = "No (imposible) 🙃";
+      }
+    }, 300);
+  </script>
 </body>
 </html>
