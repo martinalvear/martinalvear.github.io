@@ -31,9 +31,7 @@
       overflow:hidden;
     }
 
-    .hearts{
-      position:fixed; inset:0; pointer-events:none; overflow:hidden;
-    }
+    .hearts{ position:fixed; inset:0; pointer-events:none; overflow:hidden; }
     .heart{
       position:absolute;
       width:18px; height:18px;
@@ -51,16 +49,13 @@
     .heart{ background: currentColor; }
     .heart::before{ left:-9px; top:0; }
     .heart::after{ left:0; top:-9px; }
-
     @keyframes floatUp{
       from{ transform: translateY(20svh) rotate(45deg); }
       to{ transform: translateY(-120svh) rotate(45deg); }
     }
 
-    .wrap{
-      width:min(680px, 92vw);
-      padding: 18px;
-    }
+    .wrap{ width:min(680px, 92vw); padding: 18px; }
+
     .card{
       background: var(--card);
       backdrop-filter: blur(10px);
@@ -68,10 +63,9 @@
       box-shadow: var(--shadow);
       border-radius: var(--radius);
       padding: clamp(18px, 3.5vw, 30px);
-      padding-bottom: clamp(58px, 6vw, 74px); /* extra espacio por si el "No" se mueve */
-      position:relative; /* necesario para que el "No" se mueva dentro */
-      overflow: hidden;  /* evita que el botón salga visualmente */
+      position:relative;
     }
+
     .badge{
       display:inline-flex;
       align-items:center;
@@ -109,8 +103,8 @@
       align-items:center;
       justify-content:flex-start;
       margin-top: 10px;
-      position:relative;
     }
+
     button{
       border:0;
       border-radius: 16px;
@@ -118,17 +112,19 @@
       font-weight: 800;
       font-size: 16px;
       cursor:pointer;
-      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+      transition: transform .18s ease, filter .12s ease, box-shadow .12s ease;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
+      transform-origin: left center;
     }
+
     #yesBtn{
       background: linear-gradient(180deg, #ff5b95, var(--yes));
       color:white;
       box-shadow: 0 14px 30px rgba(255,77,136,.28);
       min-width: 180px;
     }
-    #yesBtn:hover{ filter: brightness(1.02); transform: translateY(-1px); }
+    #yesBtn:hover{ filter: brightness(1.02); }
     #yesBtn:active{ transform: translateY(1px) scale(.99); }
 
     #noBtn{
@@ -136,7 +132,6 @@
       color: #6d6d78;
       border: 1px dashed rgba(120,120,140,.45);
       min-width: 150px;
-      position: relative; /* se vuelve absolute cuando “huye” */
     }
 
     .hint{
@@ -175,10 +170,7 @@
       margin-top: 14px;
     }
 
-    .confetti{
-      position:fixed; inset:0; pointer-events:none;
-      overflow:hidden;
-    }
+    .confetti{ position:fixed; inset:0; pointer-events:none; overflow:hidden; }
     .piece{
       position:absolute;
       width:10px; height:16px;
@@ -189,12 +181,11 @@
       filter: drop-shadow(0 8px 10px rgba(0,0,0,.08));
     }
     @keyframes fall{
-      to{
-        transform: translateY(120vh) rotate(720deg);
-      }
+      to{ transform: translateY(120vh) rotate(720deg); }
     }
   </style>
 </head>
+
 <body>
   <div class="hearts" aria-hidden="true" id="hearts"></div>
   <div class="confetti" aria-hidden="true" id="confetti"></div>
@@ -204,14 +195,11 @@
       <div class="badge"><span class="dot"></span> Mensaje importante</div>
 
       <h1 id="title">¿Quieres ser mi San Valentín?💗</h1>
-      <p id="subtitle">
-        Te amo demasiado :D
-        <strong></strong>
-      </p>
+      <p id="subtitle">Te amo demasiado :D</p>
 
-      <div class="buttons" id="btnZone">
+      <div class="buttons">
         <button id="yesBtn" type="button">Sí💘</button>
-        <button id="noBtn" type="button" aria-label="No (no disponible)">No 🙃</button>
+        <button id="noBtn" type="button">No 🙃</button>
       </div>
 
       <div class="hint" id="hint">Pista: el “No” está en modo tímido hoy.</div>
@@ -233,6 +221,7 @@
   <script>
     // ---------- Mini generador de corazones flotando ----------
     const hearts = document.getElementById("hearts");
+    const confetti = document.getElementById("confetti");
     const colors = ["#ff4d88", "#ff6ad5", "#a55cff", "#ff3b6c", "#ff88b3"];
 
     function spawnHeart() {
@@ -251,69 +240,7 @@
     setInterval(spawnHeart, 380);
     for (let i = 0; i < 10; i++) setTimeout(spawnHeart, i * 120);
 
-    // ---------- Botones ----------
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn  = document.getElementById("noBtn");
-    const hint   = document.getElementById("hint");
-    const modal  = document.getElementById("modal");
-    const closeBtn = document.getElementById("closeBtn");
-    const confetti = document.getElementById("confetti");
-
-    const phrases = [
-      "Esa opción no está disponible 😌",
-      "Nop, hoy no existe el ‘No’ 😅",
-      "Intenta de nuevo… con el ‘Sí’ 😘",
-      "El ‘No’ se fue a dormir 💤",
-      "Solo se aceptan ‘Sí’ 💗"
-    ];
-    let tries = 0;
-
-    function moveNoButton() {
-      tries++;
-
-      const card = document.querySelector(".card");
-      const cardRect = card.getBoundingClientRect();
-
-      // OJO: si aún está "relative", su tamaño es estable.
-      // Forzamos un absolute dentro de la card.
-      noBtn.style.position = "absolute";
-
-      // Obtenemos el tamaño del botón ya en su layout
-      const btnRect = noBtn.getBoundingClientRect();
-
-      const pad = 14;
-
-      // límites dentro de la card (coordenadas internas)
-      const maxX = Math.max(pad, cardRect.width - btnRect.width - pad);
-      const maxY = Math.max(pad, cardRect.height - btnRect.height - pad);
-
-      // random dentro del recuadro
-      const x = pad + Math.random() * (maxX - pad);
-      const y = pad + Math.random() * (maxY - pad);
-
-      noBtn.style.left = x + "px";
-      noBtn.style.top  = y + "px";
-
-      hint.textContent = phrases[Math.floor(Math.random() * phrases.length)];
-      noBtn.style.transform = `rotate(${(-6 + Math.random() * 12).toFixed(1)}deg)`;
-    }
-
-    // Desktop: cuando pasa el mouse, huye dentro de la card
-    noBtn.addEventListener("mouseenter", moveNoButton);
-
-    // Móvil: al intentar tocarlo, huye dentro de la card
-    noBtn.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      moveNoButton();
-    }, { passive: false });
-
-    // Si por alguna razón llega un click, lo anulamos igual
-    noBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      moveNoButton();
-    });
-
-    // ---------- Modal + confetti ----------
+    // ---------- Confetti ----------
     function launchConfetti() {
       const pieces = 90;
       for (let i = 0; i < pieces; i++) {
@@ -330,40 +257,69 @@
       }
     }
 
+    // ---------- Lógica TikTok: Sí crece, No se encoge ----------
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn  = document.getElementById("noBtn");
+    const hint   = document.getElementById("hint");
+    const modal  = document.getElementById("modal");
+    const closeBtn = document.getElementById("closeBtn");
+
+    let scaleYes = 1;
+    let scaleNo  = 1;
+
+    const phrases = [
+      "¿Seguraaa? 👀",
+      "Piénsalo bien 😌",
+      "El ‘Sí’ se ve mejor 💗",
+      "Yo creo que quieres decir Sí 😘",
+      "Ups… intenta otra vez 💕"
+    ];
+
+    function shrinkNoGrowYes(e) {
+      e.preventDefault();
+
+      // Sí crece suave
+      scaleYes += 0.14;
+      if (scaleYes > 2.2) scaleYes = 2.2;
+      yesBtn.style.transform = `scale(${scaleYes})`;
+
+      // No se achica lento (para que no desaparezca rápido)
+      scaleNo -= 0.06;
+      if (scaleNo < 0.55) scaleNo = 0.55; // mínimo visible
+      noBtn.style.transform = `scale(${scaleNo})`;
+
+      hint.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+    }
+
+    // Desktop: al intentar acercarse al No
+    noBtn.addEventListener("mouseenter", shrinkNoGrowYes);
+
+    // Móvil: al intentar tocar el No
+    noBtn.addEventListener("touchstart", shrinkNoGrowYes, { passive: false });
+
+    // Click real bloqueado igual
+    noBtn.addEventListener("click", shrinkNoGrowYes);
+
+    // ---------- Sí abre modal ----------
     yesBtn.addEventListener("click", () => {
       modal.classList.add("show");
       launchConfetti();
 
-      // Reset del NO para que vuelva junto al Sí (por si se movió)
-      noBtn.style.position = "relative";
-      noBtn.style.left = "";
-      noBtn.style.top = "";
+      // Reset tamaños (por si lo vuelven a jugar)
+      scaleYes = 1;
+      scaleNo  = 1;
+      yesBtn.style.transform = "";
       noBtn.style.transform = "";
+      hint.textContent = "Pista: el “No” está en modo tímido hoy.";
+      noBtn.textContent = "No 🙃";
       noBtn.style.opacity = "";
       noBtn.style.filter = "";
-      noBtn.textContent = "No 🙃";
-
-      // reset contador
-      tries = 0;
-      hint.textContent = "Pista: el “No” está en modo tímido hoy.";
     });
 
     closeBtn.addEventListener("click", () => modal.classList.remove("show"));
     modal.addEventListener("click", (e) => {
       if (e.target === modal) modal.classList.remove("show");
     });
-
-    // Bonus: si insiste mucho, lo hacemos mini (pero sin desaparecer)
-    setInterval(() => {
-      if (tries >= 6) {
-        noBtn.style.opacity = "0.75";
-        noBtn.style.filter = "grayscale(1)";
-      }
-      if (tries >= 10) {
-        noBtn.style.opacity = "0.5";
-        noBtn.textContent = "No (imposible) 🙃";
-      }
-    }, 300);
   </script>
 </body>
 </html>
