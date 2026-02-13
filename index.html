@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>¿Quieres ser mi San Valentín? 💘</title>
+
   <style>
     :root{
       --bg1:#ffecf3;
@@ -12,11 +13,11 @@
       --ink:#2b1b26;
       --muted:#6b4b5c;
       --yes:#ff4d88;
-      --no:#b9b9c3;
       --shadow: 0 18px 50px rgba(0,0,0,.12);
       --radius: 22px;
     }
     *{ box-sizing:border-box; }
+
     body{
       margin:0;
       min-height:100svh;
@@ -27,7 +28,7 @@
         radial-gradient(900px 700px at 80% 20%, #fff 0%, transparent 55%),
         linear-gradient(180deg, var(--bg1), var(--bg2));
       color:var(--ink);
-      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       overflow:hidden;
     }
 
@@ -38,7 +39,6 @@
       transform: rotate(45deg);
       opacity:.8;
       animation: floatUp linear infinite;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.08));
     }
     .heart::before, .heart::after{
       content:"";
@@ -54,7 +54,7 @@
       to{ transform: translateY(-120svh) rotate(45deg); }
     }
 
-    .wrap{ width:min(680px, 92vw); padding: 18px; }
+    .wrap{ width:min(720px, 92vw); padding:18px; }
 
     .card{
       background: var(--card);
@@ -63,7 +63,6 @@
       box-shadow: var(--shadow);
       border-radius: var(--radius);
       padding: clamp(18px, 3.5vw, 30px);
-      position:relative;
     }
 
     .badge{
@@ -74,71 +73,78 @@
       border-radius: 999px;
       background:#fff;
       border:1px solid rgba(0,0,0,.06);
-      box-shadow: 0 10px 25px rgba(0,0,0,.08);
       font-weight:700;
-      letter-spacing:.2px;
     }
-    .badge .dot{
-      width:10px; height:10px; border-radius:50%;
-      background: var(--yes);
-      box-shadow: 0 0 0 6px rgba(255,77,136,.18);
+
+    .top{
+      display:flex;
+      gap:20px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 14px;
     }
 
     h1{
-      margin: 14px 0 8px;
+      margin:0;
       font-size: clamp(22px, 4.3vw, 34px);
-      line-height: 1.15;
     }
     p{
-      margin: 0 0 18px;
+      margin: 8px 0 0;
       color: var(--muted);
-      font-size: clamp(14px, 2.8vw, 16px);
-      line-height: 1.55;
+    }
+
+    /* Imagen Snoopy */
+    .snoopy{
+      width: clamp(120px, 20vw, 180px);
+      animation: floatSnoopy 3s ease-in-out infinite;
+    }
+    .snoopy img{
+      width:100%;
+      height:auto;
+      display:block;
+    }
+
+    @keyframes floatSnoopy{
+      0%{ transform: translateY(0px); }
+      50%{ transform: translateY(-8px); }
+      100%{ transform: translateY(0px); }
     }
 
     .buttons{
+      margin-top: 20px;
       display:flex;
       gap:12px;
-      flex-wrap:wrap;
       align-items:center;
-      justify-content:flex-start;
-      margin-top: 10px;
     }
 
     button{
       border:0;
       border-radius: 16px;
-      padding: 14px 18px;
-      font-weight: 800;
-      font-size: 16px;
       cursor:pointer;
-      transition: transform .18s ease, filter .12s ease, box-shadow .12s ease;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      transform-origin: left center;
+      transition: transform .2s ease;
+      font-weight:800;
     }
 
     #yesBtn{
+      padding: 16px 26px;
+      font-size: 18px;
       background: linear-gradient(180deg, #ff5b95, var(--yes));
       color:white;
-      box-shadow: 0 14px 30px rgba(255,77,136,.28);
-      min-width: 180px;
     }
-    #yesBtn:hover{ filter: brightness(1.02); }
-    #yesBtn:active{ transform: translateY(1px) scale(.99); }
 
     #noBtn{
+      padding: 10px 14px;
+      font-size: 14px;
       background: #f2f2f6;
       color: #6d6d78;
       border: 1px dashed rgba(120,120,140,.45);
-      min-width: 150px;
     }
 
     .hint{
-      margin-top: 14px;
+      margin-top: 12px;
       font-size: 13px;
       color: #7a5063;
-      opacity:.9;
+      min-height:18px;
     }
 
     .modal{
@@ -150,176 +156,125 @@
       padding: 18px;
     }
     .modal.show{ display:grid; }
+
     .modal-card{
-      width:min(560px, 94vw);
       background:#fff;
       border-radius: 22px;
       padding: 22px;
-      box-shadow: 0 25px 70px rgba(0,0,0,.25);
-      border: 1px solid rgba(0,0,0,.06);
-    }
-    .modal-card h2{
-      margin: 0 0 8px;
-      font-size: 22px;
-      line-height:1.2;
-    }
-    .modal-card p{ margin:0 0 14px; }
-    .row{
-      display:flex; gap:10px; flex-wrap:wrap;
-      justify-content:flex-end;
-      margin-top: 14px;
+      width:min(500px, 90vw);
+      text-align:center;
     }
 
-    .confetti{ position:fixed; inset:0; pointer-events:none; overflow:hidden; }
-    .piece{
-      position:absolute;
-      width:10px; height:16px;
-      border-radius: 4px;
-      opacity:.95;
-      transform: translateY(-10vh) rotate(0deg);
-      animation: fall linear forwards;
-      filter: drop-shadow(0 8px 10px rgba(0,0,0,.08));
+    #closeBtn{
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: #ff4d88;
+      color:#fff;
+      margin-top:15px;
     }
-    @keyframes fall{
-      to{ transform: translateY(120vh) rotate(720deg); }
+
+    @media (max-width: 600px){
+      .top{ flex-direction:column; text-align:center; }
     }
   </style>
 </head>
 
 <body>
-  <div class="hearts" aria-hidden="true" id="hearts"></div>
-  <div class="confetti" aria-hidden="true" id="confetti"></div>
+
+  <div class="hearts" id="hearts"></div>
 
   <main class="wrap">
-    <section class="card" role="group" aria-label="Pregunta San Valentín">
-      <div class="badge"><span class="dot"></span> Mensaje importante</div>
+    <section class="card">
+      <div class="badge">💌 Mensaje importante</div>
 
-      <h1 id="title">¿Quieres ser mi San Valentín?💗</h1>
-      <p id="subtitle">Te amo demasiado :D</p>
+      <div class="top">
+        <div>
+          <h1>¿Quieres ser mi San Valentín? 💗</h1>
+          <p>Te amo demasiado :D</p>
+        </div>
+
+        <!-- Imagen que me enviaste -->
+        <div class="snoopy">
+          <img src="image-removebg-preview.png" alt="Snoopy con flor">
+        </div>
+      </div>
 
       <div class="buttons">
-        <button id="yesBtn" type="button">Sí💘</button>
-        <button id="noBtn" type="button">No 🙃</button>
+        <button id="yesBtn">Sí💘</button>
+        <button id="noBtn">No 🙃</button>
       </div>
 
       <div class="hint" id="hint">Pista: el “No” está en modo tímido hoy.</div>
     </section>
   </main>
 
-  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modal">
     <div class="modal-card">
-      <h2 id="modalTitle">Te amo mi amor 💞</h2>
-      <p id="modalText">
-        Espero pasar este contigo este día el resto de nuestras vidas. Gracias por ser tan increíble y hacerme tan feliz.
-      </p>
-      <div class="row">
-        <button id="closeBtn" type="button">Cerrar 💗</button>
-      </div>
+      <h2>Te amo mi amor 💞</h2>
+      <p>Gracias por ser la mejor parte de mi vida.</p>
+      <button id="closeBtn">Cerrar 💗</button>
     </div>
   </div>
 
-  <script>
-    // ---------- Mini generador de corazones flotando ----------
-    const hearts = document.getElementById("hearts");
-    const confetti = document.getElementById("confetti");
-    const colors = ["#ff4d88", "#ff6ad5", "#a55cff", "#ff3b6c", "#ff88b3"];
+<script>
+  // corazones
+  const hearts = document.getElementById("hearts");
+  const colors = ["#ff4d88","#ff6ad5","#a55cff"];
 
-    function spawnHeart() {
-      const h = document.createElement("div");
-      h.className = "heart";
-      h.style.left = Math.random() * 100 + "vw";
-      h.style.bottom = (-10 - Math.random() * 20) + "vh";
-      h.style.color = colors[Math.floor(Math.random() * colors.length)];
-      const dur = 6 + Math.random() * 8;
-      h.style.animationDuration = dur + "s";
-      h.style.opacity = (0.45 + Math.random() * 0.45).toFixed(2);
-      h.style.transform = `rotate(45deg) scale(${(0.7 + Math.random() * 1.2).toFixed(2)})`;
-      hearts.appendChild(h);
-      setTimeout(() => h.remove(), dur * 1000);
-    }
-    setInterval(spawnHeart, 380);
-    for (let i = 0; i < 10; i++) setTimeout(spawnHeart, i * 120);
+  function spawnHeart(){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.style.left=Math.random()*100+"vw";
+    h.style.bottom="-10vh";
+    h.style.color=colors[Math.floor(Math.random()*colors.length)];
+    h.style.animationDuration=(6+Math.random()*4)+"s";
+    hearts.appendChild(h);
+    setTimeout(()=>h.remove(),10000);
+  }
+  setInterval(spawnHeart,500);
 
-    // ---------- Confetti ----------
-    function launchConfetti() {
-      const pieces = 90;
-      for (let i = 0; i < pieces; i++) {
-        const p = document.createElement("div");
-        p.className = "piece";
-        p.style.left = (Math.random() * 100) + "vw";
-        p.style.top = (-10 - Math.random() * 30) + "vh";
-        p.style.background = colors[Math.floor(Math.random() * colors.length)];
-        p.style.animationDuration = (2.8 + Math.random() * 1.8) + "s";
-        p.style.width = (8 + Math.random() * 8) + "px";
-        p.style.height = (10 + Math.random() * 16) + "px";
-        confetti.appendChild(p);
-        setTimeout(() => p.remove(), 5000);
-      }
-    }
+  const yesBtn=document.getElementById("yesBtn");
+  const noBtn=document.getElementById("noBtn");
+  const hint=document.getElementById("hint");
+  const modal=document.getElementById("modal");
+  const closeBtn=document.getElementById("closeBtn");
 
-    // ---------- Lógica TikTok: Sí crece, No se encoge ----------
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn  = document.getElementById("noBtn");
-    const hint   = document.getElementById("hint");
-    const modal  = document.getElementById("modal");
-    const closeBtn = document.getElementById("closeBtn");
+  let scaleYes=1;
+  let scaleNo=1;
 
-    let scaleYes = 1;
-    let scaleNo  = 1;
+  const phrases=[
+    "¿Seguraaa? 👀",
+    "El ‘Sí’ se ve mejor 💗",
+    "Creo que quieres decir Sí 😘",
+    "Nooo, ese botón no 😭💗"
+  ];
 
-    const phrases = [
-      "¿Seguraaa? 👀",
-      "Piénsalo bien 😌",
-      "El ‘Sí’ se ve mejor 💗",
-      "Yo creo que quieres decir Sí 😘",
-      "Ups… intenta otra vez 💕"
-    ];
+  function shrinkNoGrowYes(e){
+    e.preventDefault();
 
-    function shrinkNoGrowYes(e) {
-      e.preventDefault();
+    scaleYes+=0.12;
+    if(scaleYes>2.3) scaleYes=2.3;
+    yesBtn.style.transform=`scale(${scaleYes})`;
 
-      // Sí crece suave
-      scaleYes += 0.14;
-      if (scaleYes > 2.2) scaleYes = 2.2;
-      yesBtn.style.transform = `scale(${scaleYes})`;
+    scaleNo-=0.05;
+    if(scaleNo<0.55) scaleNo=0.55;
+    noBtn.style.transform=`scale(${scaleNo})`;
 
-      // No se achica lento (para que no desaparezca rápido)
-      scaleNo -= 0.06;
-      if (scaleNo < 0.55) scaleNo = 0.55; // mínimo visible
-      noBtn.style.transform = `scale(${scaleNo})`;
+    hint.textContent=phrases[Math.floor(Math.random()*phrases.length)];
+  }
 
-      hint.textContent = phrases[Math.floor(Math.random() * phrases.length)];
-    }
+  noBtn.addEventListener("mouseenter",shrinkNoGrowYes);
+  noBtn.addEventListener("touchstart",shrinkNoGrowYes,{passive:false});
+  noBtn.addEventListener("click",shrinkNoGrowYes);
 
-    // Desktop: al intentar acercarse al No
-    noBtn.addEventListener("mouseenter", shrinkNoGrowYes);
+  yesBtn.addEventListener("click",()=>{
+    modal.classList.add("show");
+  });
 
-    // Móvil: al intentar tocar el No
-    noBtn.addEventListener("touchstart", shrinkNoGrowYes, { passive: false });
+  closeBtn.addEventListener("click",()=>{
+    modal.classList.remove("show");
+  });
+</script>
 
-    // Click real bloqueado igual
-    noBtn.addEventListener("click", shrinkNoGrowYes);
-
-    // ---------- Sí abre modal ----------
-    yesBtn.addEventListener("click", () => {
-      modal.classList.add("show");
-      launchConfetti();
-
-      // Reset tamaños (por si lo vuelven a jugar)
-      scaleYes = 1;
-      scaleNo  = 1;
-      yesBtn.style.transform = "";
-      noBtn.style.transform = "";
-      hint.textContent = "Pista: el “No” está en modo tímido hoy.";
-      noBtn.textContent = "No 🙃";
-      noBtn.style.opacity = "";
-      noBtn.style.filter = "";
-    });
-
-    closeBtn.addEventListener("click", () => modal.classList.remove("show"));
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) modal.classList.remove("show");
-    });
-  </script>
 </body>
 </html>
